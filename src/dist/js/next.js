@@ -8589,7 +8589,7 @@
             eachSubVertex: function (callback, context) {
                 nx.each(this.vertices(), callback, context || this);
                 /*nx.each(this.vertexSet(), function (vertex) {
-                    console.log('veritzybittex', vertex);
+                    console.log('vertex', vertex);
                     vertex.eachSubVertex(callback, context);
                 }, this);*/
             },
@@ -13366,6 +13366,7 @@
     var __layouts = {
         'force': 'nx.graphic.Topology.NeXtForceLayout',
         'USMap': 'nx.graphic.Topology.USMapLayout',
+        'NorthAmericaMap': 'nx.graphic.Topology.NorthAmericaMapLayout',
         'JapanMap': 'nx.graphic.Topology.JapanMapLayout',
         'WorldMap': 'nx.graphic.Topology.WorldMapLayout',
         'hierarchicalLayout': 'nx.graphic.Topology.HierarchicalLayout',
@@ -17780,8 +17781,14 @@
                     vertex.positionGetter(function () {
                         var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
                         return {
-                            x: p[0],
-                            y: p[1]
+                            x: (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['longitude']) != undefined
+                            ) ? vertex._data.longitude : p[0],
+                            y:  (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['latitude']) != undefined
+                            ) ? vertex._data.latitude : p[1]
                         };
                     });
                     vertex.positionSetter(function (position) {
@@ -17798,8 +17805,14 @@
                     vertex.positionGetter(function () {
                         var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
                         return {
-                            x: p[0],
-                            y: p[1]
+                            x: (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['longitude']) != undefined
+                            ) ? vertex._data.longitude : p[0],
+                            y:  (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['latitude']) != undefined
+                            ) ? vertex._data.latitude : p[1],
                         };
                     });
                     vertex.positionSetter(function (position) {
@@ -17978,8 +17991,14 @@
                     vertex.positionGetter(function () {
                         var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
                         return {
-                            x: p[0],
-                            y: p[1]
+                            x: (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['longitude']) != undefined
+                            ) ? vertex._data.longitude : p[0],
+                            y:  (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['latitude']) != undefined
+                            ) ? vertex._data.latitude : p[1]
                         };
                     });
                     vertex.positionSetter(function (position) {
@@ -17995,8 +18014,14 @@
                     vertex.positionGetter(function () {
                         var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
                         return {
-                            x: p[0],
-                            y: p[1]
+                            x: (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['longitude']) != undefined
+                            ) ? vertex._data.longitude : p[0],
+                            y:  (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['latitude']) != undefined
+                            ) ? vertex._data.latitude : p[1]
                         };
                     });
                     vertex.positionSetter(function (position) {
@@ -18203,8 +18228,14 @@
                     vertex.positionGetter(function () {
                         var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
                         return {
-                            x: p[0],
-                            y: p[1]
+                            x: (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['longitude']) != undefined
+                            ) ? vertex._data.longitude : p[0],
+                            y:  (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['latitude']) != undefined
+                            ) ? vertex._data.latitude : p[1],
                         };
                     });
                     vertex.positionSetter(function (position) {
@@ -18220,8 +18251,14 @@
                     vertex.positionGetter(function () {
                         var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
                         return {
-                            x: p[0],
-                            y: p[1]
+                            x: (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['longitude']) != undefined
+                            ) ? vertex._data.longitude : p[0],
+                            y:  (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['latitude']) != undefined
+                            ) ? vertex._data.latitude : p[1]
                         };
                     });
                     vertex.positionSetter(function (position) {
@@ -18444,8 +18481,14 @@
                     vertex.positionGetter(function () {
                         var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
                         return {
-                            x: p[0],
-                            y: p[1]
+                            x: (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['longitude']) != undefined
+                            ) ? vertex._data.longitude : p[0],
+                            y:  (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['latitude']) != undefined
+                            ) ? vertex._data.latitude : p[1],
                         };
                     });
                     vertex.positionSetter(function (position) {
@@ -18461,8 +18504,14 @@
                     vertex.positionGetter(function () {
                         var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
                         return {
-                            x: p[0],
-                            y: p[1]
+                            x: (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['longitude']) != undefined
+                            ) ? vertex._data.longitude : p[0],
+                            y:  (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['latitude']) != undefined
+                            ) ? vertex._data.latitude : p[1]
                         };
                     });
                     vertex.positionSetter(function (position) {
@@ -18608,6 +18657,203 @@
 
 
 })(nx, nx.global);
+
+
+
+(function (nx, global) {
+
+    var D3URL = 'http://d3js.org/d3.v3.min.js';
+    var D3TOPOJSON = 'http://d3js.org/topojson.v1.min.js';
+    var NORTHAMERICAMAPTopoJSON = '/network_visualization/lib/north-america.topo.json';
+    var width = 500,
+        height = 400;
+    var projection;
+    var util = nx.util;
+
+
+    nx.define("nx.graphic.Topology.NorthAmericaMapLayout", {
+        properties: {
+            topology: {},
+            projection: {}
+        },
+        methods: {
+            init: function (args) {
+                this.inherited(args);
+                if (!projection && typeof(d3) !== "undefined") {
+                    projection = d3.geo.equirectangular().translate([width / 2, height / 2]).precision(0.1);
+                    this.projection(projection);
+                }
+            },
+            process: function (graph, config, callback) {
+                // load d3
+
+                console.log('CONFIG --->', config);
+
+                if (!config.northAmericaTopoJson) {
+                    console.log('Please idenity north america topo json url, download from:https://dl.dropboxusercontent.com/u/1662536/topojson/japan.topo.json');
+                    return;
+                }
+
+                NORTHAMERICAMAPTopoJSON = config.northAmericaTopoJson;
+
+
+                this._loadD3(function () {
+                    this._loadTopoJSON(function () {
+                        this._process(graph, config, callback);
+                    }.bind(this));
+                }.bind(this));
+            },
+            _loadD3: function (fn) {
+                if (typeof (d3) === "undefined") {
+                    util.loadScript(D3TOPOJSON, function () {
+                        fn.call(this);
+                    }.bind(this));
+                } else {
+                    fn.call(this);
+                }
+            },
+            _loadTopoJSON: function (fn) {
+                if (typeof (topojson) === "undefined") {
+                    util.loadScript(D3TOPOJSON, function () {
+                        fn.call(this);
+                    }.bind(this));
+                } else {
+                    fn.call(this);
+                }
+            },
+            _process: function (graph, config, callback) {
+                var topo = this.topology();
+                topo.prependLayer('northAmericaMap', 'nx.graphic.Topology.NorthAmericaMapLayer');
+
+
+                projection = d3.geo.equirectangular().translate([width / 2, height / 2]).precision(0.1);
+
+                var longitude = config.longitude || 'model.longitude',
+                    latitude = config.latitude || 'model.latitude';
+
+                var _longitude = longitude.split(".").pop(),
+                    _latitude = latitude.split(".").pop();
+
+                topo.graph().eachVertexSet(function (vertex) {
+                    vertex.positionGetter(function () {
+                        var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
+                        return {
+                            x: (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['longitude']) != undefined
+                            ) ? vertex._data.longitude : p[0],
+                            y:  (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['latitude']) != undefined
+                            ) ? vertex._data.latitude : p[1],
+                        };
+                    });
+                    vertex.positionSetter(function (position) {
+                        var p = projection.invert([position.x, position.y]);
+                        vertex.set(_longitude, p[0]);
+                        vertex.set(_latitude, p[1]);
+                    });
+
+                    vertex.position(vertex.positionGetter().call(vertex));
+                });
+
+                topo.graph().eachVertex(function (vertex) {
+                    vertex.positionGetter(function () {
+                        var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
+                        return {
+                            x: (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['longitude']) != undefined
+                            ) ? vertex._data.longitude : p[0],
+                            y:  (
+                                typeof(vertex['_data']) != undefined &&
+                                typeof(vertex['_data']['latitude']) != undefined
+                            ) ? vertex._data.latitude : p[1]
+                        };
+                    });
+                    vertex.positionSetter(function (position) {
+                        var p = projection.invert([position.x, position.y]);
+                        vertex.set(_longitude, p[0]);
+                        vertex.set(_latitude, p[1]);
+                    });
+
+                    vertex.position(vertex.positionGetter().call(vertex));
+                });
+
+                this.projection(projection);
+
+                if (callback) {
+                    topo.getLayer("northAmericaMap").complete(function () {
+                        callback.call(topo);
+                    });
+                }
+            }
+
+        }
+    });
+
+
+    //
+
+    nx.define("nx.graphic.Topology.NorthAmericaMapLayer", nx.graphic.Topology.Layer, {
+        properties: {
+            complete: {}
+        },
+        view: {
+            type: 'nx.graphic.Group',
+            content: {
+                name: 'map',
+                type: 'nx.graphic.Group'
+            }
+        },
+        methods: {
+            draw: function () {
+                    var map = this.view('map');
+
+                    var topo = this.topology();
+                var group = d3.select(map.view().dom().$dom);
+
+                var path = d3.geo.path().projection(projection);
+                
+            d3.json(NORTHAMERICAMAPTopoJSON, function(error, na) {
+                group.insert("path", ".graticule")
+                        .datum(topojson.feature(na, na.objects['continent_North_America_subunits']))
+                        .attr("class", "land mapPath")
+                        .attr("d", path);
+
+                    group.insert("path", ".graticule")
+                        .datum(topojson.mesh(na, na.objects, function (a, b) {
+                            return a !== b;
+                        }))
+                        .attr("class", "boundary mapBoundary")
+                        .attr("d", path);
+
+
+                    topo.stage().resetFitMatrix();
+                    topo.fit(null, null, false);
+                    if (this.complete()) {
+                        this.complete().call();
+                    }
+
+
+            }.bind(this));
+            },
+            updateMap: function () {
+            },
+            update: function () {
+                var topo = this.topology();
+                this.set("scale", topo.scale());
+            }
+        }
+    });
+
+
+})(nx, nx.global);
+
+
+
+
+
 
 (function (nx, global) {
     /**
