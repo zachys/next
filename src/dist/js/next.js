@@ -15513,7 +15513,7 @@
                 this.setBinding('activated', 'model.activated,direction=<>', this);
             },
             update: function () {
-                                this.view().visible(this.model().activated() && this.model().inheritedVisible());
+                                //this.view().visible(this.model().activated() && this.model().inheritedVisible());
             },
             expand: function (animation, callback, context) {
                 this.fire('beforeExpandNode', this);
@@ -18665,8 +18665,8 @@
     var D3URL = 'http://d3js.org/d3.v3.min.js';
     var D3TOPOJSON = 'http://d3js.org/topojson.v1.min.js';
     var NORTHAMERICAMAPTopoJSON = '/network_visualization/lib/north-america.topo.json';
-    var width = 500,
-        height = 400;
+    var width = 960,
+        height = 960;
     var projection;
     var util = nx.util;
 
@@ -18686,9 +18686,6 @@
             },
             process: function (graph, config, callback) {
                 // load d3
-
-                console.log('CONFIG --->', config);
-
                 if (!config.northAmericaTopoJson) {
                     console.log('Please idenity north america topo json url, download from:https://dl.dropboxusercontent.com/u/1662536/topojson/japan.topo.json');
                     return;
@@ -18829,8 +18826,10 @@
                         .attr("d", path);
 
 
-                    topo.stage().resetFitMatrix();
-                    topo.fit(null, null, false);
+                    //topo.stage().resetFitMatrix();
+                    //topo.fit(null, null, false);
+                    //topo.adaptToContainer();
+                    //topo.stage().actualSize();
                     if (this.complete()) {
                         this.complete().call();
                     }
@@ -18841,8 +18840,10 @@
             updateMap: function () {
             },
             update: function () {
-                var topo = this.topology();
-                this.set("scale", topo.scale());
+                //var topo = this.topology();
+                //topo.stage().resetFitMatrix();
+                //topo.stage().actualSize();
+                //this.set("scale", topo.scale());
             }
         }
     });
