@@ -355,7 +355,6 @@
     });
 
 })(nx);
-
 (function (nx) {
     var global = nx.global,
         document = global.document,
@@ -535,8 +534,105 @@
         }
     });
 })(nx);
-
 (function (nx) {
+    /**
+     * Ajax http client
+     * @class nx.HttpClient
+     * @constructor
+     */
+    var HttpClient = nx.define('nx.HttpClient',{
+        static: true,
+        methods: {
+            /**
+             * Ajax send.
+             * @method send
+             * @param options
+             */
+            send: function (options) {
+                var xhr = new XMLHttpRequest();
+                var callback = options.callback || function () {
+				};
+				
+	xhr.open(
+		options.method || 'GET',
+		options.url,
+		true
+	);
+
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == 4) {
+			var type = xhr.getResponseHeader('Content-Type');
+			var result = (type.indexOf('application/json') >= 0) ? JSON.parse(xhr.responseText) : xhr.responseText;
+			callback(result);
+		}
+	};
+
+	xhr.setRequestHeader('Content-Type','application/json');
+	xhr.send(nx.is(options.data,'Object') ? JSON.stringify(options.data) : options.data);
+},
+/**
+ * Get request
+ * @method GET
+ * @param url
+ * @param callback
+ * @constructor
+ */
+GET: function (url,callback) {
+	this.send({
+		url: url,
+		method: 'GET',
+		callback: callback
+	});
+},
+/**
+ * Post request
+ * @method POST
+ * @param url
+ * @param data
+ * @param callback
+ * @constructor
+ */
+POST: function (url,data,callback) {
+	this.send({
+		url: url,
+		method: 'POST',
+		data: data,
+		callback: callback
+	});
+},
+/**
+ * Put request
+ * @method PUT
+ * @param url
+ * @param data
+ * @param callback
+ * @constructor
+ */
+PUT: function (url,data,callback) {
+	this.send({
+		url: url,
+		method: 'PUT',
+		data: data,
+		callback: callback
+	});
+},
+/**
+ * Delete request
+ * @method DELETE
+ * @param url
+ * @param callback
+ * @constructor
+ */
+DELETE: function (url,callback) {
+	this.send({
+		url: url,
+		method: 'DELETE',
+		callback: callback
+	});
+}
+}
+});
+})(nx);(function (nx) {
     var Collection = nx.data.Collection;
     /**
      * Dom Node
@@ -707,17 +803,15 @@
                 },this);
             }
         }
-    });
-})(nx);
-(function (nx) {
+	});
+})(nx);(function (nx) {
     /**
      * Text Node
      * @class nx.dom.Text
      * @constructor
      */
-    nx.define('nx.dom.Text', nx.dom.Node);
-})(nx);
-(function (nx) {
+	nx.define('nx.dom.Text', nx.dom.Node);
+})(nx);(function (nx) {
     var global = nx.global,
         document = global.document,
         env = nx.Env,
@@ -1314,7 +1408,6 @@
     });
 })
 (nx);
-
 (function (nx) {
 
     var Collection = nx.data.Collection;
@@ -1338,8 +1431,7 @@
             }
         }
     });
-})(nx);
-(function (nx) {
+})(nx);(function (nx) {
     var Element = nx.dom.Element;
     var Fragment = nx.dom.Fragment;
     var Text = nx.dom.Text,
@@ -21607,6 +21699,326 @@
             }
         }
     });
+
+
+})(nx, nx.global);
+(function (nx, global) {
+    var d = 500;
+
+    /**
+     * Thumbnail for topology
+     * @class nx.graphic.Topology.Thumbnail
+     * @extend nx.ui.Component
+     */
+
+    nx.define("nx.graphic.Topology.Thumbnail", nx.ui.Component, {
+        events: [],
+        view: {
+            props: {
+                'class': 'n-topology-thumbnail'
+            },
+            content: {
+                props: {
+                    'class': 'n-topology-container'
+                },
+                content: [
+                    {
+                        name: 'win',
+                        props: {
+                            'class': 'n-topology-thumbnail-win'
+                        }
+                    },
+                    {
+                        name: 'canvas',
+                        tag: 'canvas',
+                        props: {
+                            'class': 'n-topology-thumbnail-canvas'
+                        }
+                    }
+                ]
+            }
+
+        },
+        properties: {
+            topology: {},
+            width: {
+                set: function (value) {
+                    this.view().dom().setStyles({
+                        width: value * 0.2,
+                        left: value * 0.8
+                    });
+
+                    this.view('canvas').dom().setStyle('width', value * 0.2);
+                    this._drawWin();
+                }
+            },
+            height: {
+                set: function (value) {
+                    this.view().dom().setStyles({
+                        height: value * 0.2,
+                        top: value * 0.8
+                    });
+
+                    this.view('canvas').dom().setStyle('height', value * 0.2);
+                    this._drawWin();
+                }
+            }
+        },
+        methods: {
+            attach: function (parent, index) {
+                this.inherited(parent, index);
+                var topo = parent.owner();
+                this.topology(topo);
+
+
+                topo.on('dragStage', this._drawWin, this);
+                topo.on('dragStage', this._drawTopo, this);
+                topo.stage().watch('zoomLevel', this._drawWin, this);
+
+
+                topo.on('topologyGenerated', function () {
+                    var graph = topo.graph();
+                    graph.on('addVertex', this._drawTopo, this);
+                    graph.on('removeVertex', this._drawTopo, this);
+                    graph.on('updateVertexCoordinate', this._drawTopo, this);
+
+                    this._drawTopo();
+                }, this);
+
+
+            },
+            _drawWin: function () {
+                var topo = this.topology();
+                if (!topo) {
+                    return;
+                }
+
+
+                var width = topo.width() * 0.2;
+                var height = topo.height() * 0.2;
+                var zoomLevel = topo.stage().zoomLevel();
+                var stageBound = topo.stage().scalingLayer().getBound();
+                this.view('win').dom().setStyles({
+                    width: width / zoomLevel,
+                    height: height / zoomLevel,
+                    top: (stageBound.top - (topo.height() - stageBound.height) / 2) * 0.2,
+                    left: (stageBound.left - (topo.width() - stageBound.width) / 2) * 0.2
+                });
+
+
+            },
+            _drawTopo: function () {
+                var topo = this.topology();
+                if (!topo) {
+                    return;
+                }
+
+
+                var width = topo.width() * 0.2;
+                var height = topo.height() * 0.2;
+                var translateX = 0;
+                var translateY = 0;
+                var canvas = this.view('canvas').dom().$dom;
+                var ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, width * 2, height * 2);
+
+                topo.eachNode(function (node) {
+                    ctx.fillStyle = '#26A1C5';
+                    ctx.fillRect(node.x() * 0.2 + translateX, node.y() * 0.2 + translateY, 3, 3);
+                });
+
+
+            }
+        }
+    });
+
+
+})(nx, nx.global);(function (nx, global) {
+
+    var OptimizeLabel = nx.define({
+        events: [],
+        properties: {
+        },
+        methods: {
+            init: function () {
+                console.log();
+            },
+            optimizeLabel: function (sender, args) {
+
+                if (console) {
+                    console.time('optimizeLabel');
+                }
+
+
+                var topo = this;
+                var stageScale = topo.stageScale();
+                var translate = {
+                    x: topo.matrix().x(),
+                    y: topo.matrix().y()
+                };
+
+                topo.eachNode(function (node) {
+                    node.enableSmartLabel(true);
+                    node.calcLabelPosition(true);
+                });
+
+
+                var boundCollection = {};
+                topo.eachNode(function (node, id) {
+                    if (node.view().visible()) {
+                        var bound = topo.getInsideBound(node.getBound());
+                        var nodeBound = {
+                            left: bound.left * stageScale - translate.x * stageScale,
+                            top: bound.top * stageScale - translate.y * stageScale,
+                            width: bound.width * stageScale,
+                            height: bound.height * stageScale
+                        };
+                        boundCollection[id] = nodeBound;
+
+                        //test
+//                        var rect = new nx.graphic.Rect(nodeBound);
+//                        rect.sets({
+//                            stroke: '#f00',
+//                            fill: 'none',
+//                            x: nodeBound.left,
+//                            y: nodeBound.top
+//                        });
+//
+//                        rect.attach(topo.stage());
+                    }
+
+                });
+
+                var boundHitTest = nx.util.boundHitTest;
+
+                topo.eachNode(function (node) {
+                    if (node.view().visible()) {
+                        var bound = topo.getInsideBound(node.view('label').getBound());
+                        var labelBound = {
+                            left: bound.left * stageScale - translate.x * stageScale,
+                            top: bound.top * stageScale - translate.y * stageScale,
+                            width: bound.width * stageScale,
+                            height: bound.height * stageScale
+                        };
+
+//                        var labelrect = new nx.graphic.Rect(labelBound);
+//                        labelrect.sets({
+//                            stroke: '#f50',
+//                            fill: 'none',
+//                            x: labelBound.left,
+//                            y: labelBound.top
+//                        });
+//                        labelrect.attach(topo.stage());
+
+
+                        var labelOverlap = false;
+                        nx.each(boundCollection, function (nodeBound, id) {
+                            if (id == node.id()) {
+                                return;
+                            }
+//                            if (rect) {
+//                                rect.dispose();
+//                            }
+//                            var rect = new nx.graphic.Rect(nodeBound);
+//                            rect.sets({
+//                                stroke: '#f00',
+//                                fill: 'none',
+//                                x: nodeBound.left,
+//                                y: nodeBound.top
+//                            });
+//
+//                            rect.attach(topo.stage());
+                            if (boundHitTest(labelBound, nodeBound)) {
+                                labelOverlap = true;
+                            }
+//                            console.log(boundHitTest(labelBound, nodeBound), node.label());
+                        });
+
+                        if (labelOverlap) {
+                            node.labelAngle(90);
+                            node.enableSmartLabel(false);
+                            node.calcLabelPosition(true);
+                        }
+                    }
+
+                });
+
+
+                if (console) {
+                    console.timeEnd('optimizeLabel');
+                }
+
+            }
+        }
+    });
+
+
+    nx.graphic.Topology.registerExtension(OptimizeLabel);
+
+
+})(nx, nx.global);(function (nx, global) {
+
+    var FillStage = nx.define({
+        methods: {
+            fillStage: function () {
+                this.fit(null, null, false);
+
+                var width = this.width();
+                var height = this.height();
+                var padding = this.padding() / 3;
+                var graphicBound = this.getBoundByNodes();
+
+                //scale
+                var xRate = (width - padding * 2) / graphicBound.width;
+                var yRate = (height - padding * 2) / graphicBound.height;
+
+
+                var topoMatrix = this.matrix();
+                var stageScale = topoMatrix.scale();
+
+
+                this.graph().vertexSets().each(function (item) {
+                    var vs = item.value();
+                    if (vs.generated() && vs.activated()) {
+                        var position = vs.position();
+                        var absolutePosition = {
+                            x: position.x * stageScale + topoMatrix.x(),
+                            y: position.y * stageScale + topoMatrix.y()
+                        };
+
+                        vs.position({
+                            x: ((absolutePosition.x - graphicBound.left) * xRate + padding - topoMatrix.x()) / stageScale,
+                            y: ((absolutePosition.y - graphicBound.top) * yRate + padding - topoMatrix.y()) / stageScale
+                        });
+                    }
+                });
+
+
+                this.graph().vertices().each(function (item) {
+                    var vertex = item.value();
+                    if (vertex.parentVertexSet() == null || !(vertex.parentVertexSet().generated() && vertex.parentVertexSet().activated())) {
+                        var position = vertex.position();
+                        var absolutePosition = {
+                            x: position.x * stageScale + topoMatrix.x(),
+                            y: position.y * stageScale + topoMatrix.y()
+                        };
+
+                        vertex.position({
+                            x: ((absolutePosition.x - graphicBound.left) * xRate + padding - topoMatrix.x()) / stageScale,
+                            y: ((absolutePosition.y - graphicBound.top) * yRate + padding - topoMatrix.y()) / stageScale
+                        });
+                    }
+                });
+
+
+                this.fit(null, null, false);
+
+            }
+        }
+    });
+
+
+    nx.graphic.Topology.registerExtension(FillStage);
 
 
 })(nx, nx.global);
