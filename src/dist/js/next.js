@@ -14666,17 +14666,8 @@
                     var topo = this.topology();
                     var icon = this.view('icon');
                     icon.set('scale', value);
-                    if (topo.showIcon()) {
-                        icon.showIcon(value > 0.2);
-                    } else {
-                        icon.showIcon(false);
-                    }
-
-                    if (value > 0.4) {
-                        this.view('label').set('visible', this._labelVisibility == null ? true : this._labelVisibility);
-                    } else {
-                        this.view('label').set('visible', false);
-                    }
+                    icon.showIcon(value);
+                    this.view('label').set('visible', this._labelVisibility == null ? true : this._labelVisibility);
 
                     if (this._label != null) {
                         this.calcLabelPosition();
