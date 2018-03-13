@@ -17780,14 +17780,8 @@
                     vertex.positionGetter(function () {
                         var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
                         return {
-                            x: (
-                                typeof(vertex['_data']) != undefined &&
-                                typeof(vertex['_data']['longitude']) != undefined
-                            ) ? vertex._data.longitude : p[0],
-                            y:  (
-                                typeof(vertex['_data']) != undefined &&
-                                typeof(vertex['_data']['latitude']) != undefined
-                            ) ? vertex._data.latitude : p[1],
+                            x: p[0],
+                            y:  p[1],
                         };
                     });
                     vertex.positionSetter(function (position) {
@@ -17803,14 +17797,8 @@
                     vertex.positionGetter(function () {
                         var p = projection([nx.path(vertex, _longitude), nx.path(vertex, _latitude)]);
                         return {
-                            x: (
-                                typeof(vertex['_data']) != undefined &&
-                                typeof(vertex['_data']['longitude']) != undefined
-                            ) ? vertex._data.longitude : p[0],
-                            y:  (
-                                typeof(vertex['_data']) != undefined &&
-                                typeof(vertex['_data']['latitude']) != undefined
-                            ) ? vertex._data.latitude : p[1]
+                            x: p[0],
+                            y:  p[1]
                         };
                     });
                     vertex.positionSetter(function (position) {
