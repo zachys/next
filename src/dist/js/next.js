@@ -9212,22 +9212,17 @@
              */
             addVertexSet: function (data, config) {
 
-                console.log("addVertexSet called");
+
                 var vertexSet;
                 var nodeSet = this.nodeSet();
-                console.log("nodeSets are ", nodeSet);
                 var vertexSets = this.vertexSets();
-                console.log("vertexSets are ", vertexSet);
                 if (nx.is(nodeSet, nx.data.ObservableCollection)) {
-                    console.log("path 1");
                     nodeSet.add(data);
                     vertexSet = vertexSets.getItem(vertexSets.count() - 1);
                 } else {
-                    console.log("path 2");
                     nodeSet.push(data);
                     vertexSet = this._addVertexSet(data);
                 }
-                console.log("after path, vertexSets are: ", vertexSet);
                 if (!vertexSet) {
                     return null;
                 }
