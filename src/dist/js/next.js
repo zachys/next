@@ -17725,7 +17725,7 @@
             init: function (args) {
                 this.inherited(args);
                 if (!projection && typeof(d3) !== "undefined") {
-                    projection = d3.geo.equirectangular().translate([width / 2, height / 2]).precision(0.1);
+                    projection = d3.geo.albersUsa();
                     this.projection(projection);
                 }
             },
@@ -17768,7 +17768,7 @@
                 topo.prependLayer('usMap', 'nx.graphic.Topology.USMapLayer');
 
 
-                projection = d3.geo.equirectangular().translate([width / 2, height / 2]).precision(0.1);
+                projection = d3.geo.albersUsa();
 
                 var longitude = config.longitude || 'model.longitude',
                     latitude = config.latitude || 'model.latitude';
@@ -18326,20 +18326,6 @@
         },
         methods: {
             draw: function () {
-
-                /*var width = 500,
-                height = 500,
-                scale = 1;
-
-            d3.select("body").append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .append("g").attr("id", "all-g");
-
-            var projection = d3.geo.mercator()
-                    .center([138, 38])
-                    .scale(1200)
-                    .translate([width / 2, height / 2]);*/
                     var map = this.view('map');
 
                     var topo = this.topology();
@@ -18369,48 +18355,7 @@
                         this.complete().call();
                     }
 
-
-
-                /*var features = topojson.object(jpn, jpn.objects.japan);
-
-                group.append("g").attr("id", "path-g").selectAll("path")
-                        .data(features.geometries)
-                        .enter()
-                        .append("path")
-                        .attr("fill", "#f0f0f0")
-                        .attr("stroke", "#999")
-                        .attr("stroke-width", 0.5/scale)
-                        .attr("d", path);*/
-
             }.bind(this));
-
-                /*var map = this.view('map');
-                var topo = this.topology();
-                var group = d3.select(map.view().dom().$dom);
-
-                var path = d3.geo.path().projection(projection);
-
-                d3.json(JAPANMAPTopoJSON, function (error, japan) {
-                    group.insert("path", ".graticule")
-                        .datum(topojson.feature(japan, japan.objects.land))
-                        .attr("class", "land mapPath")
-                        .attr("d", path);
-
-                    group.insert("path", ".graticule")
-                        .datum(topojson.mesh(japan, japan.objects.countries, function (a, b) {
-                            return a !== b;
-                        }))
-                        .attr("class", "boundary mapBoundary")
-                        .attr("d", path);
-
-
-                    topo.stage().resetFitMatrix();
-                    topo.fit(null, null, false);
-                    if (this.complete()) {
-                        this.complete().call();
-                    }
-
-                }.bind(this));*/
 
             },
             updateMap: function () {
@@ -18461,7 +18406,7 @@
                 // load d3
 
                 if (!config.europeTopoJson) {
-                    console.log('Please idenity world topo json url, download from:https://dl.dropboxusercontent.com/u/1662536/topojson/japan.topo.json');
+                    console.log('Please idenity europe topo json url.');
                     return;
                 }
 
@@ -18580,19 +18525,6 @@
         methods: {
             draw: function () {
 
-                /*var width = 500,
-                height = 500,
-                scale = 1;
-
-            d3.select("body").append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .append("g").attr("id", "all-g");
-
-            var projection = d3.geo.mercator()
-                    .center([138, 38])
-                    .scale(1200)
-                    .translate([width / 2, height / 2]);*/
                     var map = this.view('map');
 
                     var topo = this.topology();
@@ -18622,48 +18554,7 @@
                         this.complete().call();
                     }
 
-
-
-                /*var features = topojson.object(jpn, jpn.objects.japan);
-
-                group.append("g").attr("id", "path-g").selectAll("path")
-                        .data(features.geometries)
-                        .enter()
-                        .append("path")
-                        .attr("fill", "#f0f0f0")
-                        .attr("stroke", "#999")
-                        .attr("stroke-width", 0.5/scale)
-                        .attr("d", path);*/
-
             }.bind(this));
-
-                /*var map = this.view('map');
-                var topo = this.topology();
-                var group = d3.select(map.view().dom().$dom);
-
-                var path = d3.geo.path().projection(projection);
-
-                d3.json(JAPANMAPTopoJSON, function (error, japan) {
-                    group.insert("path", ".graticule")
-                        .datum(topojson.feature(japan, japan.objects.land))
-                        .attr("class", "land mapPath")
-                        .attr("d", path);
-
-                    group.insert("path", ".graticule")
-                        .datum(topojson.mesh(japan, japan.objects.countries, function (a, b) {
-                            return a !== b;
-                        }))
-                        .attr("class", "boundary mapBoundary")
-                        .attr("d", path);
-
-
-                    topo.stage().resetFitMatrix();
-                    topo.fit(null, null, false);
-                    if (this.complete()) {
-                        this.complete().call();
-                    }
-
-                }.bind(this));*/
 
             },
             updateMap: function () {
@@ -18708,14 +18599,14 @@
             init: function (args) {
                 this.inherited(args);
                 if (!projection && typeof(d3) !== "undefined") {
-                    projection = d3.geo.equirectangular().translate([width / 2, height / 2]).precision(0.1);
+                    projection = d3.geo.mercator();
                     this.projection(projection);
                 }
             },
             process: function (graph, config, callback) {
                 // load d3
                 if (!config.northAmericaTopoJson) {
-                    console.log('Please idenity north america topo json url, download from:https://dl.dropboxusercontent.com/u/1662536/topojson/japan.topo.json');
+                    console.log('Please idenity north america topo json url.');
                     return;
                 }
 
@@ -18750,8 +18641,7 @@
                 var topo = this.topology();
                 topo.prependLayer('northAmericaMap', 'nx.graphic.Topology.NorthAmericaMapLayer');
 
-
-                projection = d3.geo.equirectangular().translate([width / 2, height / 2]).precision(0.1);
+                projection = d3.geo.mercator();
 
                 var longitude = config.longitude || 'model.longitude',
                     latitude = config.latitude || 'model.latitude';
@@ -18841,28 +18731,27 @@
                 var path = d3.geo.path().projection(projection);
                 
             d3.json(NORTHAMERICAMAPTopoJSON, function(error, na) {
+                console.log(na);
                 group.insert("path", ".graticule")
-                        .datum(topojson.feature(na, na.objects['continent_North_America_subunits']))
+                        .datum(topojson.feature(na, na['objects']['continent_North_America_subunits']))
                         .attr("class", "land mapPath")
                         .attr("d", path);
 
-                    group.insert("path", ".graticule")
-                        .datum(topojson.mesh(na, na.objects, function (a, b) {
-                            return a !== b;
-                        }))
-                        .attr("class", "boundary mapBoundary")
-                        .attr("d", path);
+                group.insert("path", ".graticule")
+                    .datum(topojson.mesh(na, na['objects'], function (a, b) {
+                        return a !== b;
+                    }))
+                    .attr("class", "boundary mapBoundary")
+                    .attr("d", path);
 
 
-                    //topo.stage().resetFitMatrix();
-                    //topo.fit(null, null, false);
-                    //topo.adaptToContainer();
-                    //topo.stage().actualSize();
-                    if (this.complete()) {
-                        this.complete().call();
-                    }
-
-
+                //topo.stage().resetFitMatrix();
+                //topo.fit(null, null, false);
+                //topo.adaptToContainer();
+                //topo.stage().actualSize();
+                if (this.complete()) {
+                    this.complete().call();
+                }
             }.bind(this));
             },
             updateMap: function () {
