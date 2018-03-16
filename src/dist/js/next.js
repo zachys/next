@@ -9212,7 +9212,6 @@
              */
             addVertexSet: function (data, config) {
 
-
                 var vertexSet;
                 var nodeSet = this.nodeSet();
                 var vertexSets = this.vertexSets();
@@ -9261,7 +9260,8 @@
                     };
                 }
                 var id = nx.path(data, identityKey);
-                id = id !== undefined ? id : this.vertexSets().count() + this.vertices().count();
+                //Increment id to avoid duplicate ids with existing nodes.
+                id = id !== undefined ? id : this.vertexSets().count() + this.vertices().count() + 2;
                 while (vertexSets.getItem(id)) {
                     id = id + 1;
                 }
@@ -11806,6 +11806,13 @@
                 return mark.found;
             },
             aggregationNodes: function (inNodes, inConfig) {
+                if (!inConfig) {
+                    inConfig={"label":prompt("Please type in the name of the aggregation node")};
+                }
+                if (!inConfig.label) {
+                    alert("Name is required for aggregation");
+                    return null;
+                }
                 // transform nodes or node ids into vertices
                 var nodes = [],
                     vertices = [];
@@ -11841,12 +11848,28 @@
                 // make up data, config and parent
                 var data, parent, pn = null,
                     config = {};
+                var x = aggregateVertices[0].x();
+                var y = aggregateVertices[0].y();
+                var i = 0;
+                //Increment x and y position by 5 until finding a place on canvas where there is no existing node
+                while (i < aggregateVertices.length) {
+                    if (aggregateVertices[i].x() - x < 5 && aggregateVertices[i].x() - x > -5) {
+                        x += 5;
+                        i = 0;
+                    } else if (aggregateVertices[i].y() - y < 5 && aggregateVertices[i].y() - y > -5) {
+                        y += 5;
+                        i = 0;
+                    } else {
+                        i++;
+                    }
+                }
                 data = {
                     nodes: aggregateIds,
-                    x: (inConfig && typeof inConfig.x === "number" ? inConfig.x : aggregateVertices[0].x()),
-                    y: (inConfig && typeof inConfig.y === "number" ? inConfig.y : aggregateVertices[0].y()),
+                    x: (inConfig && typeof inConfig.x === "number" ? inConfig.x : x),
+                    y: (inConfig && typeof inConfig.y === "number" ? inConfig.y : y),
                     label: (inConfig && inConfig.label || [nodes[0].label(), nodes[nodes.length - 1].label()].sort().join("-"))
                 };
+                data.name = data.label;
                 parent = aggregateVertices[0].parentVertexSet();
                 if (parent) {
                     config.parentVertexSetID = parent.id();
@@ -11867,7 +11890,7 @@
             addNodeSet: function (obj, inOption, parentNodeSet) {
                 var vertex = this.graph().addVertexSet(obj, inOption);
                 if (vertex) {
-                    var nodeSet = this.getNode(vertex.id());
+                    var nodeSet = this.getLayer("nodeSet").getNodeSet(vertex.id());
                     if (parentNodeSet) {
                         nodeSet.parentNodeSet(parentNodeSet);
                     }
